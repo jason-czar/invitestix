@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Event, TicketTier, Ticket } from "@/api/entities";
 import { BarChart3, Calendar, DollarSign, Users, TrendingUp, Eye } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
@@ -11,6 +12,7 @@ import SalesChart from "../components/dashboard/SalesChart";
 
 export default function Dashboard() {
   const [events, setEvents] = useState([]);
+  const { isAuthenticated } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState({
@@ -25,6 +27,11 @@ export default function Dashboard() {
   }, []);
 
   const loadDashboardData = async () => {
+    if (!isAuthenticated) {
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
     try {
       const [eventsData, ticketsData] = await Promise.all([
